@@ -4,6 +4,8 @@ import 'package:flutter_shopping_app/models/products.dart';
 import 'package:flutter_shopping_app/widgets/product_item.dart';
 
 class ProductsOverviewScreen extends StatelessWidget {
+  static const String routeName = '/products-overview';
+
   final List<Product> loadedProducts = [
     Product(
       id: 'p1',

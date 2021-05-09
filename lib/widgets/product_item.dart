@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_shopping_app/providers/product.dart';
 import 'package:provider/provider.dart';
+
+import 'package:flutter_shopping_app/providers/cart.dart';
+import 'package:flutter_shopping_app/providers/product.dart';
 
 import 'package:flutter_shopping_app/screens/product_detail_screen.dart';
 
@@ -15,6 +17,8 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Product product = context.read<Product>();
+    final Cart cart = context.read<Cart>();
+
     return Container(
       decoration: BoxDecoration(
           boxShadow: kElevationToShadow[2],
@@ -46,7 +50,9 @@ class ProductItem extends StatelessWidget {
             ),
             trailing: IconButton(
               icon: Icon(Icons.shopping_cart),
-              onPressed: () {},
+              onPressed: () {
+                cart.addItem(product.id, product.price, product.title);
+              },
               color: Theme.of(context).accentColor,
             ),
           ),

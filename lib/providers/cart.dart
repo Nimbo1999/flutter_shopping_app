@@ -21,6 +21,20 @@ class Cart with ChangeNotifier {
     return {..._items};
   }
 
+  double get totalAmount {
+    if (_items.isEmpty) return 0.0;
+
+    var total = 0.0;
+
+    List<CartItem> cartItems = _items.values.toList();
+
+    for (var i = 0; i < cartItems.length; i++) {
+      total += cartItems[i].price * cartItems[i].quantity;
+    }
+
+    return total;
+  }
+
   int get itemCount {
     if (_items.isEmpty) return 0;
 

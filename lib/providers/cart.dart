@@ -21,6 +21,10 @@ class Cart with ChangeNotifier {
     return {..._items};
   }
 
+  List<CartItem> get itemsToList {
+    return items.values.toList();
+  }
+
   double get totalAmount {
     if (_items.isEmpty) return 0.0;
 
@@ -58,6 +62,12 @@ class Cart with ChangeNotifier {
     return 0;
   }
 
+  int get productsCount {
+    if (_items.isEmpty) return 0;
+
+    return _items.length;
+  }
+
   void addItem(String productId, double price, String title) {
     if (_items.containsKey(productId)) {
       _items.update(
@@ -77,6 +87,11 @@ class Cart with ChangeNotifier {
               title: title,
               quantity: 1));
     }
+    notifyListeners();
+  }
+
+  void removeItem(String productId) {
+    _items.remove(productId);
     notifyListeners();
   }
 }

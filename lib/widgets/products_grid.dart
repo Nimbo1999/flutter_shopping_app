@@ -12,15 +12,18 @@ class ProductsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Product> products = Provider.of<Products>(context).items;
+    final productsProvider = Provider.of<Products>(context);
+    List<Product> products = productsProvider.items;
 
     return GridView.builder(
       itemCount: products.length,
       itemBuilder: (context, i) => ProductItem(
-          key: Key(products[i].id),
-          id: products[i].id,
-          title: products[i].id,
-          imageUrl: products[i].imageUrl),
+        key: Key(products[i].id),
+        id: products[i].id,
+        title: products[i].title,
+        imageUrl: products[i].imageUrl,
+        isFavorite: products[i].isFavorite,
+      ),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           childAspectRatio: 3 / 2,

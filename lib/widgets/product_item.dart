@@ -5,9 +5,14 @@ class ProductItem extends StatelessWidget {
   final String id;
   final String title;
   final String imageUrl;
+  final bool isFavorite;
 
   const ProductItem(
-      {Key? key, required this.id, required this.imageUrl, required this.title})
+      {Key? key,
+      required this.id,
+      required this.imageUrl,
+      required this.title,
+      required this.isFavorite})
       : super(key: key);
 
   @override
@@ -18,7 +23,7 @@ class ProductItem extends StatelessWidget {
         footer: GridTileBar(
           backgroundColor: Colors.black87,
           leading: IconButton(
-            icon: const Icon(Icons.favorite),
+            icon: Icon(isFavorite ? Icons.favorite : Icons.favorite_outline),
             color: Theme.of(context).colorScheme.secondary,
             onPressed: () {},
           ),

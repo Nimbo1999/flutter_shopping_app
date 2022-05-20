@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:my_shop/models/product.dart';
+import 'package:my_shop/providers/cart.dart';
 import 'package:my_shop/screens/product_detail_screen.dart';
 import 'package:provider/provider.dart';
 
 class ProductItem extends StatelessWidget {
   const ProductItem({Key? key}) : super(key: key);
+
+  void onClickAddToCart(Cart cart, Product product) {
+    cart.addItem(product.id, product.price, product.title);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,10 +28,13 @@ class ProductItem extends StatelessWidget {
               onPressed: value.changeFavoriteState,
             ),
           ),
-          trailing: IconButton(
-            icon: const Icon(Icons.shopping_cart),
-            color: Theme.of(context).colorScheme.secondary,
-            onPressed: () {},
+          trailing: Consumer<Cart>(
+            builder: (ctx, value, child) => IconButton(
+              icon: child!,
+              color: Theme.of(context).colorScheme.secondary,
+              onPressed: () => onClickAddToCart(value, product),
+            ),
+            child: const Icon(Icons.shopping_cart),
           ),
           title: Text(
             product.title,

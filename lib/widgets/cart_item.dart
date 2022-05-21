@@ -10,7 +10,8 @@ class CartItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cartItem = Provider.of<CartItem>(context);
-    final removeFromCart = Provider.of<Cart>(context).removeItemFromCart;
+    final removeFromCart =
+        Provider.of<Cart>(context, listen: false).removeItemFromCart;
 
     return Dismissible(
       key: Key(cartItem.id),

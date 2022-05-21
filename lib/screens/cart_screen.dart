@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_shop/providers/cart.dart';
+import 'package:my_shop/widgets/cart_item.dart';
 import 'package:provider/provider.dart';
 
 class CartScreen extends StatelessWidget {
@@ -41,7 +42,20 @@ class CartScreen extends StatelessWidget {
                 ],
               ),
             ),
-          )
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            child: ListView.builder(
+                itemCount: cart.itemsList.length,
+                itemBuilder: (ctx, i) => ChangeNotifierProvider.value(
+                      value: cart.itemsList[i],
+                      child: CartItemWidget(
+                          key: Key(cart.itemsList[i].id),
+                          productId: cart.getProductIdFromCart(i)),
+                    )),
+          ),
         ],
       ),
     );

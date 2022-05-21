@@ -8,15 +8,22 @@ class Cart with ChangeNotifier {
     return {..._items};
   }
 
+  List<CartItem> get itemsList {
+    return _items.values.toList();
+  }
+
+  String getProductIdFromCart(int index) {
+    return _items.keys.toList()[index];
+  }
+
   int get itemsCount {
-    return _items.length;
+    return _items.values
+        .fold(0, (previousValue, element) => previousValue + element.quantity);
   }
 
   double get totalAmout {
-    return _items.entries.fold(
-        0,
-        (previousValue, element) =>
-            previousValue + (element.value.price * element.value.quantity));
+    return _items.values
+        .fold(0, (previousValue, element) => previousValue + element.subTotal);
   }
 
   void addItem(String productId, double price, String title) {
@@ -39,6 +46,11 @@ class Cart with ChangeNotifier {
             title: title,
             quantity: 1,
             price: price));
+    notifyListeners();
+  }
+
+  void removeItemFromCart(String productId) {
+    _items.remove(productId);
     notifyListeners();
   }
 }

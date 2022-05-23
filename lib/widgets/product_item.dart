@@ -7,8 +7,20 @@ import 'package:provider/provider.dart';
 class ProductItem extends StatelessWidget {
   const ProductItem({Key? key}) : super(key: key);
 
-  void onClickAddToCart(Cart cart, Product product) {
+  void onClickAddToCart(BuildContext context, Cart cart, Product product) {
     cart.addItem(product.id, product.price, product.title);
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('${product.title} added to cart!',
+          style: const TextStyle(fontSize: 16)),
+      backgroundColor: const Color.fromARGB(255, 0, 97, 8),
+      duration: const Duration(seconds: 3),
+      action: SnackBarAction(
+        label: 'UNDO',
+        textColor: Colors.amber,
+        onPressed: () => cart.decreaseQuantityOfProduct(product.id),
+      ),
+    ));
   }
 
   @override
@@ -32,7 +44,7 @@ class ProductItem extends StatelessWidget {
             builder: (ctx, value, child) => IconButton(
               icon: child!,
               color: Theme.of(context).colorScheme.secondary,
-              onPressed: () => onClickAddToCart(value, product),
+              onPressed: () => onClickAddToCart(context, value, product),
             ),
             child: const Icon(Icons.shopping_cart),
           ),

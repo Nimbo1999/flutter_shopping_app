@@ -4,12 +4,14 @@ import 'package:my_shop/providers/products.dart';
 import 'package:provider/provider.dart';
 
 class TargetProduct {
+  String? id;
   String? title;
   String? description;
   String? imageUrl;
   double? price;
 
-  TargetProduct({this.title, this.description, this.imageUrl, this.price});
+  TargetProduct(
+      {this.id, this.title, this.description, this.imageUrl, this.price});
 }
 
 class EditProductScreen extends StatefulWidget {
@@ -29,11 +31,38 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _form = GlobalKey<FormState>();
   TargetProduct _editedProduct = TargetProduct(
       description: null, imageUrl: null, price: null, title: null);
+  bool _isInit = false;
+  final _initialState = {'title': '', 'description': '', 'price': ''};
 
   @override
   void initState() {
     _imageUrlController.addListener(_updateImageUrl);
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (!_isInit) {
+      if (ModalRoute.of(context) != null &&
+          ModalRoute.of(context)!.settings.arguments != null) {
+        final productId = ModalRoute.of(context)!.settings.arguments as String;
+        final Product product =
+            Provider.of<Products>(context, listen: false).findById(productId);
+        _editedProduct = TargetProduct(
+          id: productId,
+          title: product.title,
+          description: product.description,
+          price: product.price,
+          imageUrl: product.imageUrl,
+        );
+        _initialState['title'] = product.title;
+        _initialState['description'] = product.description;
+        _initialState['price'] = product.price.toString();
+        _imageUrlController.text = product.imageUrl;
+      }
+    }
+    _isInit = true;
+    super.didChangeDependencies();
   }
 
   @override
@@ -66,13 +95,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
   void _onSubmitForm() {
     if (!isFormValid(_form.currentState)) return;
     _form.currentState!.save();
+    final bool isEditingProduct =
+        _editedProduct.id != null && _editedProduct.id!.isNotEmpty;
     final Product product = Product(
-        id: DateTime.now().toString(),
+        id: _editedProduct.id ?? DateTime.now().toString(),
         title: _editedProduct.title!,
         description: _editedProduct.description!,
         price: _editedProduct.price!,
         imageUrl: _editedProduct.imageUrl!);
-    Provider.of<Products>(context, listen: false).addProduct(product);
+    if (isEditingProduct) {
+      Provider.of<Products>(context, listen: false).updateProduct(product);
+    } else {
+      Provider.of<Products>(context, listen: false).addProduct(product);
+    }
     Navigator.of(context).pop();
   }
 
@@ -93,12 +128,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
             child: Column(
               children: [
                 TextFormField(
+                  initialValue: _initialState['title'],
                   decoration: const InputDecoration(labelText: 'Title'),
                   textInputAction: TextInputAction.next,
                   onFieldSubmitted: (value) =>
                       _changeFocusNode(_priceFocusNode),
                   onSaved: (value) {
                     _editedProduct = TargetProduct(
+                        id: _editedProduct.id,
                         title: value,
                         description: _editedProduct.description,
                         imageUrl: _editedProduct.imageUrl,
@@ -112,6 +149,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   },
                 ),
                 TextFormField(
+                  initialValue: _initialState['price'],
                   decoration: const InputDecoration(labelText: 'Price'),
                   textInputAction: TextInputAction.next,
                   keyboardType: TextInputType.number,
@@ -120,6 +158,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   focusNode: _priceFocusNode,
                   onSaved: (value) {
                     _editedProduct = TargetProduct(
+                        id: _editedProduct.id,
                         title: _editedProduct.title,
                         description: _editedProduct.description,
                         imageUrl: _editedProduct.imageUrl,
@@ -139,6 +178,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   },
                 ),
                 TextFormField(
+                  initialValue: _initialState['description'],
                   decoration: const InputDecoration(labelText: 'Description'),
                   maxLines: 3,
                   keyboardType: TextInputType.multiline,
@@ -147,6 +187,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   focusNode: _descriptionFocusNode,
                   onSaved: (value) {
                     _editedProduct = TargetProduct(
+                        id: _editedProduct.id,
                         title: _editedProduct.title,
                         description: value,
                         imageUrl: _editedProduct.imageUrl,
@@ -199,6 +240,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         onFieldSubmitted: (value) => _onSubmitForm(),
                         onSaved: (value) {
                           _editedProduct = TargetProduct(
+                              id: _editedProduct.id,
                               title: _editedProduct.title,
                               description: _editedProduct.description,
                               imageUrl: value,

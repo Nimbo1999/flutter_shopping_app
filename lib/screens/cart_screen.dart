@@ -5,7 +5,7 @@ import 'package:my_shop/widgets/cart_item.dart';
 import 'package:provider/provider.dart';
 
 class CartScreen extends StatelessWidget {
-  static const routName = 'CartScreen';
+  static const routName = '/cart-screen';
   const CartScreen({Key? key}) : super(key: key);
 
   @override

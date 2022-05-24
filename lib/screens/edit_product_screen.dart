@@ -15,7 +15,7 @@ class TargetProduct {
 }
 
 class EditProductScreen extends StatefulWidget {
-  static const String routeName = 'EditProductScreen';
+  static const String routeName = '/edit-product-screen';
 
   const EditProductScreen({Key? key}) : super(key: key);
 

@@ -33,8 +33,10 @@ class MyApp extends StatelessWidget {
             colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.purple)
                 .copyWith(secondary: Colors.deepOrange),
             fontFamily: 'Lato'),
-        home: const ProductsOverviewScreen(),
+        initialRoute: ProductsOverviewScreen.routeName,
         routes: {
+          ProductsOverviewScreen.routeName: (ctx) =>
+              const ProductsOverviewScreen(),
           ProductDetailScreen.routeName: (ctx) => const ProductDetailScreen(),
           CartScreen.routName: (context) => const CartScreen(),
           OrdersScreen.routeName: (context) => const OrdersScreen(),

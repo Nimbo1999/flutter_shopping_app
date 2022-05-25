@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_shop/providers/cart.dart';
+import 'package:my_shop/providers/products.dart';
 import 'package:my_shop/screens/cart_screen.dart';
+import 'package:my_shop/services/products_service.dart';
 import 'package:my_shop/widgets/app_drawer.dart';
 import 'package:my_shop/widgets/badge.dart';
 import 'package:provider/provider.dart';
@@ -11,8 +13,10 @@ enum FilterOptions { Favorites, All }
 
 class ProductsOverviewScreen extends StatefulWidget {
   static const String routeName = '/';
+  final IProductsService productsService;
 
-  const ProductsOverviewScreen({Key? key}) : super(key: key);
+  const ProductsOverviewScreen({Key? key, required this.productsService})
+      : super(key: key);
 
   @override
   State<ProductsOverviewScreen> createState() => _ProductsOverviewScreenState();
@@ -20,11 +24,26 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   bool _showOnlyFavorites = false;
+  bool _isLoading = true;
 
   void setShowOnlyFavorites(bool newValue) {
     setState(() {
       _showOnlyFavorites = newValue;
     });
+  }
+
+  void setIsLoading(bool value) {
+    setState(() {
+      _isLoading = value;
+    });
+  }
+
+  @override
+  void initState() {
+    Provider.of<Products>(context, listen: false)
+        .fetchProducts(widget.productsService)
+        .then((_) => setIsLoading(false));
+    super.initState();
   }
 
   void onChangeFilter(FilterOptions filterOption) {
@@ -66,7 +85,11 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: const AppDrawer(),
-      body: ProductsGrid(showOnlyFavorites: _showOnlyFavorites),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(strokeWidth: 5),
+            )
+          : ProductsGrid(showOnlyFavorites: _showOnlyFavorites),
     );
   }
 }

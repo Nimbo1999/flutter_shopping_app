@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:my_shop/adapters/products_adapter.dart';
 import 'package:my_shop/models/product.dart';
 import 'package:my_shop/services/products_service.dart';
 
@@ -11,15 +12,31 @@ class ProductsServiceImpl implements IProductsService {
   @override
   Future<String> postProduct(Product product) async {
     final Uri url = Uri.parse('$_baseUrl/products.json');
-    http.Response response = await http.post(url,
-        body: json.encode({
-          'title': product.title,
-          'description': product.description,
-          'imageUrl': product.imageUrl,
-          'price': product.price,
-          'isFavorite': product.isFavorite
-        }));
-    final String generatedId = json.decode(response.body)['name'];
-    return generatedId;
+    try {
+      http.Response response = await http.post(url,
+          body: json.encode({
+            'title': product.title,
+            'description': product.description,
+            'imageUrl': product.imageUrl,
+            'price': product.price,
+            'isFavorite': product.isFavorite
+          }));
+      final String generatedId = json.decode(response.body)['name'];
+      return generatedId;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<Product>> fetchProducts() async {
+    final Uri url = Uri.parse('$_baseUrl/products.json');
+    try {
+      final http.Response response = await http.get(url);
+      return ProductsAdapter.fetchProductsToListOfProducts(
+          json.decode(response.body) as Map<String, dynamic>);
+    } catch (error) {
+      rethrow;
+    }
   }
 }

@@ -36,6 +36,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       description: null, imageUrl: null, price: null, title: null);
   bool _isInit = false;
   final _initialState = {'title': '', 'description': '', 'price': ''};
+  bool _isloading = false;
 
   @override
   void initState() {
@@ -95,6 +96,28 @@ class _EditProductScreenState extends State<EditProductScreen> {
     return true;
   }
 
+  void _setIsLoading(bool value) {
+    setState(() {
+      _isloading = value;
+    });
+  }
+
+  void _onSubmitError(error) {
+    print(error);
+    _setIsLoading(false);
+    showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: const Text('An error ocurred!'),
+              content: const Text('Something went wrong'),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Ok'))
+              ],
+            ));
+  }
+
   void _onSubmitForm() {
     if (!isFormValid(_form.currentState)) return;
     _form.currentState!.save();
@@ -108,11 +131,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
         imageUrl: _editedProduct.imageUrl!);
     if (isEditingProduct) {
       Provider.of<Products>(context, listen: false).updateProduct(product);
+      Navigator.of(context).pop();
+      return;
     } else {
+      _setIsLoading(true);
       Provider.of<Products>(context, listen: false)
-          .addProduct(widget.productsService, product);
+          .addProduct(widget.productsService, product)
+          .then((_) => _setIsLoading(false))
+          .then((_) => Navigator.of(context).pop())
+          .catchError(_onSubmitError);
     }
-    Navigator.of(context).pop();
   }
 
   @override
@@ -131,6 +159,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
           child: SingleChildScrollView(
             child: Column(
               children: [
+                if (_isloading)
+                  LinearProgressIndicator(
+                    color: Colors.blue,
+                    backgroundColor: Colors.blue[100],
+                  ),
                 TextFormField(
                   initialValue: _initialState['title'],
                   decoration: const InputDecoration(labelText: 'Title'),

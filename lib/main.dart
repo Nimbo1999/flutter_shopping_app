@@ -39,8 +39,9 @@ class MyApp extends StatelessWidget {
             fontFamily: 'Lato'),
         initialRoute: ProductsOverviewScreen.routeName,
         routes: {
-          ProductsOverviewScreen.routeName: (ctx) =>
-              const ProductsOverviewScreen(),
+          ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen(
+                productsService: productsService,
+              ),
           ProductDetailScreen.routeName: (ctx) => const ProductDetailScreen(),
           CartScreen.routName: (context) => const CartScreen(),
           OrdersScreen.routeName: (context) => const OrdersScreen(),

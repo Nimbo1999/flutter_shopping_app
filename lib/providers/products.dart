@@ -43,16 +43,27 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
-  void updateProduct(Product product) {
+  Future<void> updateProduct(
+      IProductsService productsService, Product product) async {
     final int productIndex =
         _items.indexWhere((element) => element.id == product.id);
     if (productIndex == -1) return;
+    await productsService.updateProduct(product);
     _items[productIndex] = product;
     notifyListeners();
   }
 
-  void deleteProduct(String id) {
-    _items.removeWhere((element) => element.id == id);
+  Future<void> deleteProduct(IProductsService productsService, String id) {
+    final int indexOfProduct = _items.indexWhere((element) => element.id == id);
+    final Product product = _items[indexOfProduct];
+    _items.removeAt(indexOfProduct);
     notifyListeners();
+    return productsService
+        .deleteProduct(product)
+        .then((_) => Future.value())
+        .catchError((error) {
+      _items.insert(indexOfProduct, product);
+      notifyListeners();
+    });
   }
 }

@@ -129,12 +129,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
         description: _editedProduct.description!,
         price: _editedProduct.price!,
         imageUrl: _editedProduct.imageUrl!);
+    _setIsLoading(true);
     if (isEditingProduct) {
-      Provider.of<Products>(context, listen: false).updateProduct(product);
-      Navigator.of(context).pop();
+      Provider.of<Products>(context, listen: false)
+          .updateProduct(widget.productsService, product)
+          .then((_) => _setIsLoading(false))
+          .then((value) => Navigator.of(context).pop())
+          .catchError(_onSubmitError);
       return;
     } else {
-      _setIsLoading(true);
       Provider.of<Products>(context, listen: false)
           .addProduct(widget.productsService, product)
           .then((_) => _setIsLoading(false))

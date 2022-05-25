@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_shop/models/product.dart';
 import 'package:my_shop/providers/products.dart';
+import 'package:my_shop/services/products_service.dart';
 import 'package:provider/provider.dart';
 
 class TargetProduct {
@@ -16,8 +17,10 @@ class TargetProduct {
 
 class EditProductScreen extends StatefulWidget {
   static const String routeName = '/edit-product-screen';
+  final IProductsService productsService;
 
-  const EditProductScreen({Key? key}) : super(key: key);
+  const EditProductScreen({Key? key, required this.productsService})
+      : super(key: key);
 
   @override
   State<EditProductScreen> createState() => _EditProductScreenState();
@@ -98,7 +101,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     final bool isEditingProduct =
         _editedProduct.id != null && _editedProduct.id!.isNotEmpty;
     final Product product = Product(
-        id: _editedProduct.id ?? DateTime.now().toString(),
+        id: _editedProduct.id ?? "",
         title: _editedProduct.title!,
         description: _editedProduct.description!,
         price: _editedProduct.price!,
@@ -106,7 +109,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
     if (isEditingProduct) {
       Provider.of<Products>(context, listen: false).updateProduct(product);
     } else {
-      Provider.of<Products>(context, listen: false).addProduct(product);
+      Provider.of<Products>(context, listen: false)
+          .addProduct(widget.productsService, product);
     }
     Navigator.of(context).pop();
   }

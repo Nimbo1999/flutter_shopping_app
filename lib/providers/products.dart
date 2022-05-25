@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_shop/services/products_service.dart';
 
 import '../models/product.dart';
 
@@ -51,9 +52,18 @@ class Products with ChangeNotifier {
     return _items.firstWhere((product) => product.id == id);
   }
 
-  void addProduct(Product newProduct) {
-    _items.add(newProduct);
-    notifyListeners();
+  void addProduct(IProductsService productsService, Product newProduct) {
+    productsService.postProduct(newProduct).then((productId) {
+      final Product product = Product(
+          id: productId,
+          description: newProduct.description,
+          imageUrl: newProduct.imageUrl,
+          price: newProduct.price,
+          title: newProduct.title,
+          isFavorite: newProduct.isFavorite);
+      _items.add(product);
+      notifyListeners();
+    });
   }
 
   void updateProduct(Product product) {

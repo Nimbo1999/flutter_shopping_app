@@ -7,7 +7,9 @@ import 'package:my_shop/screens/orders_screen.dart';
 import 'package:my_shop/screens/product_detail_screen.dart';
 import 'package:my_shop/screens/products_overview_screen.dart';
 import 'package:my_shop/screens/user_products_screen.dart';
+import 'package:my_shop/services/impl/orders_service_impl.dart';
 import 'package:my_shop/services/impl/products_service_impl.dart';
+import 'package:my_shop/services/orders_service.dart';
 import 'package:my_shop/services/products_service.dart';
 import 'package:provider/provider.dart';
 
@@ -19,6 +21,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   final IProductsService productsService = ProductsServiceImpl();
+  final IOrdersService ordersService = OrdersServiceImpl();
 
   MyApp({Key? key}) : super(key: key);
 
@@ -43,8 +46,10 @@ class MyApp extends StatelessWidget {
                 productsService: productsService,
               ),
           ProductDetailScreen.routeName: (ctx) => const ProductDetailScreen(),
-          CartScreen.routName: (context) => const CartScreen(),
-          OrdersScreen.routeName: (context) => const OrdersScreen(),
+          CartScreen.routName: (context) =>
+              CartScreen(ordersService: ordersService),
+          OrdersScreen.routeName: (context) =>
+              OrdersScreen(ordersService: ordersService),
           UserProductsScreen.routeName: (context) => UserProductsScreen(
                 productsService: productsService,
               ),

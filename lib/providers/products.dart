@@ -38,9 +38,13 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchProducts(IProductsService productsService) async {
-    List<Product> productList = await productsService.fetchProducts();
-    _items = productList;
-    notifyListeners();
+    try {
+      List<Product> productList = await productsService.fetchProducts();
+      _items = productList;
+      notifyListeners();
+    } catch (error) {
+      rethrow;
+    }
   }
 
   Future<void> updateProduct(

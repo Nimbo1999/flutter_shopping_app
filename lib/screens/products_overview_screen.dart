@@ -12,7 +12,7 @@ import '../widgets/products_grid.dart';
 enum FilterOptions { Favorites, All }
 
 class ProductsOverviewScreen extends StatefulWidget {
-  static const String routeName = '/';
+  static const String routeName = '/products-overview-screen';
   final IProductsService productsService;
 
   const ProductsOverviewScreen({Key? key, required this.productsService})

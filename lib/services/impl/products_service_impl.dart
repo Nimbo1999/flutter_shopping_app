@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:my_shop/adapters/products_adapter.dart';
 import 'package:my_shop/exceptions/http_exception.dart';
@@ -29,6 +28,10 @@ class ProductsServiceImpl implements IProductsService {
     final Uri url = Uri.parse('$_baseUrl/products.json');
     try {
       final http.Response response = await http.get(url);
+      if (response.statusCode > 399) {
+        throw HttpException("Something went wrong.");
+      }
+
       return ProductsAdapter.fetchProductsToListOfProducts(
           json.decode(response.body) as Map<String, dynamic>);
     } catch (error) {

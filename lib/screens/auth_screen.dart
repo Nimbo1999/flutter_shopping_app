@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:my_shop/exceptions/http_exception.dart';
 import 'package:my_shop/providers/auth.dart';
 import 'package:provider/provider.dart';
 
@@ -103,6 +104,39 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
+  void _showErrorDialog(String errorMessage) {
+    showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+              title: const Text('Some error occurs'),
+              content: Text(errorMessage),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text('Ok'))
+              ],
+            ));
+  }
+
+  String _getErrorMessage(HttpException exception) {
+    switch (exception.toString()) {
+      case 'EMAIL_EXISTS':
+        return 'The email address is already in use by another account.';
+      case 'OPERATION_NOT_ALLOWED':
+        return 'Password sign-in is disabled for this project.';
+      case 'TOO_MANY_ATTEMPTS_TRY_LATER':
+        return 'We have blocked all requests from this device due to unusual activity. Try again later.';
+      case 'EMAIL_NOT_FOUND':
+        return 'There is no user record corresponding to this identifier. The user may have been deleted.';
+      case 'INVALID_PASSWORD':
+        return 'The password is invalid or the user does not have a password.';
+      case 'USER_DISABLED':
+        return 'The user account has been disabled by an administrator.';
+      default:
+        return 'Authentication failed!';
+    }
+  }
+
   Future<void> _submit() async {
     if (_formKey.currentState == null) return;
     if (!_formKey.currentState!.validate()) {
@@ -113,16 +147,27 @@ class _AuthCardState extends State<AuthCard> {
     setState(() {
       _isLoading = true;
     });
-    if (_authMode == AuthMode.Login) {
-      await Provider.of<Auth>(context, listen: false)
-          .signin(_authData['email']!, _authData['password']!);
-    } else {
+
+    try {
+      if (_authMode == AuthMode.Login) {
+        await Provider.of<Auth>(context, listen: false)
+            .signin(_authData['email']!, _authData['password']!);
+        return;
+      }
+
       await Provider.of<Auth>(context, listen: false)
           .signup(_authData['email']!, _authData['password']!);
+    } on HttpException catch (error) {
+      String errorMessage = _getErrorMessage(error);
+      _showErrorDialog(errorMessage);
+    } catch (error) {
+      _showErrorDialog(
+          'Could not communicate with server, please try again later');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
-    setState(() {
-      _isLoading = false;
-    });
   }
 
   void _switchAuthMode() {

@@ -41,29 +41,31 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<Auth>(
             create: (ctx) => Auth(authService: authService)),
       ],
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        theme: ThemeData(
-            colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.purple)
-                .copyWith(secondary: Colors.deepOrange),
-            fontFamily: 'Lato'),
-        initialRoute: AuthScreen.routeName,
-        routes: {
-          AuthScreen.routeName: (ctx) => const AuthScreen(),
-          ProductsOverviewScreen.routeName: (ctx) => ProductsOverviewScreen(
-                productsService: productsService,
-              ),
-          ProductDetailScreen.routeName: (ctx) => const ProductDetailScreen(),
-          CartScreen.routName: (context) =>
-              CartScreen(ordersService: ordersService),
-          OrdersScreen.routeName: (context) =>
-              OrdersScreen(ordersService: ordersService),
-          UserProductsScreen.routeName: (context) => UserProductsScreen(
-                productsService: productsService,
-              ),
-          EditProductScreen.routeName: (context) =>
-              EditProductScreen(productsService: productsService),
-        },
+      child: Consumer<Auth>(
+        builder: ((context, auth, child) => MaterialApp(
+              title: 'Flutter Demo',
+              theme: ThemeData(
+                  colorScheme:
+                      ColorScheme.fromSwatch(primarySwatch: Colors.purple)
+                          .copyWith(secondary: Colors.deepOrange),
+                  fontFamily: 'Lato'),
+              home: auth.isAuth
+                  ? ProductsOverviewScreen(productsService: productsService)
+                  : const AuthScreen(),
+              routes: {
+                ProductDetailScreen.routeName: (ctx) =>
+                    const ProductDetailScreen(),
+                CartScreen.routName: (context) =>
+                    CartScreen(ordersService: ordersService),
+                OrdersScreen.routeName: (context) =>
+                    OrdersScreen(ordersService: ordersService),
+                UserProductsScreen.routeName: (context) => UserProductsScreen(
+                      productsService: productsService,
+                    ),
+                EditProductScreen.routeName: (context) =>
+                    EditProductScreen(productsService: productsService),
+              },
+            )),
       ),
     );
   }

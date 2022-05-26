@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:my_shop/adapters/products_adapter.dart';
+import 'package:my_shop/exceptions/http_exception.dart';
 import 'package:my_shop/models/product.dart';
 import 'package:my_shop/services/products_service.dart';
 
@@ -62,7 +63,22 @@ class ProductsServiceImpl implements IProductsService {
     try {
       http.Response response = await http.delete(url);
       if (response.statusCode > 399) {
-        throw ErrorDescription('Unabled to delete the product');
+        throw HttpException('Unabled to delete the product');
+      }
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> toggleFavorite(Product product) async {
+    Uri url = Uri.parse('$_baseUrl/products/${product.id}.json');
+    try {
+      final http.Response response = await http.patch(url,
+          body: json.encode({'isFavorite': product.isFavorite}));
+      if (response.statusCode > 399) {
+        throw HttpException(
+            'Unabled to favorite this item. Please try again later');
       }
     } catch (error) {
       rethrow;

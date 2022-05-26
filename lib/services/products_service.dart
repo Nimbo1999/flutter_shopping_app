@@ -5,4 +5,5 @@ abstract class IProductsService {
   Future<List<Product>> fetchProducts();
   Future<Product> updateProduct(Product product);
   Future<void> deleteProduct(Product product);
+  Future<void> toggleFavorite(Product product);
 }

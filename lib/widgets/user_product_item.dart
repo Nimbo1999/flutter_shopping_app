@@ -18,8 +18,19 @@ class UserProductItem extends StatelessWidget {
       required this.productsService})
       : super(key: key);
 
+  void onError(ScaffoldMessengerState scaffoldMessage, dynamic exception) {
+    scaffoldMessage.showSnackBar(SnackBar(
+        content: Text(exception.toString()),
+        action: SnackBarAction(
+          label: 'Ok',
+          onPressed: () {},
+        )));
+  }
+
   @override
   Widget build(BuildContext context) {
+    final ScaffoldMessengerState scaffoldMessage =
+        ScaffoldMessenger.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: ListTile(
@@ -57,6 +68,8 @@ class UserProductItem extends StatelessWidget {
                       if (value != null && value == true)
                         Provider.of<Products>(context, listen: false)
                             .deleteProduct(productsService, id)
+                            .catchError(
+                                (error) => onError(scaffoldMessage, error))
                     });
               },
               color: Theme.of(context).colorScheme.error,

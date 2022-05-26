@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:my_shop/services/products_service.dart';
 
 class Product with ChangeNotifier {
   final String id;
@@ -16,8 +17,18 @@ class Product with ChangeNotifier {
       required this.imageUrl,
       this.isFavorite = false});
 
-  void changeFavoriteState() {
+  void _changeFavoriteValue() {
     isFavorite = !isFavorite;
     notifyListeners();
+  }
+
+  Future<void> changeFavoriteState(IProductsService productsService) async {
+    _changeFavoriteValue();
+    try {
+      await productsService.toggleFavorite(this);
+    } catch (error) {
+      _changeFavoriteValue();
+      rethrow;
+    }
   }
 }

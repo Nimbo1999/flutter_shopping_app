@@ -89,7 +89,9 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           ? const Center(
               child: CircularProgressIndicator(strokeWidth: 5),
             )
-          : ProductsGrid(showOnlyFavorites: _showOnlyFavorites),
+          : ProductsGrid(
+              showOnlyFavorites: _showOnlyFavorites,
+              productsService: widget.productsService),
     );
   }
 }

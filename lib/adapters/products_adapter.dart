@@ -9,7 +9,8 @@ class ProductsAdapter {
             title: data[key]['title'],
             description: data[key]['description'],
             price: data[key]['price'],
-            imageUrl: data[key]['imageUrl']))
+            imageUrl: data[key]['imageUrl'],
+            isFavorite: data[key]['isFavorite']))
         .toList();
   }
 }

@@ -64,6 +64,7 @@ class Products with ChangeNotifier {
         .catchError((error) {
       _items.insert(indexOfProduct, product);
       notifyListeners();
+      throw error;
     });
   }
 }

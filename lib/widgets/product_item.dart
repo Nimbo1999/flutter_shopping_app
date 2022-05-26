@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:my_shop/models/product.dart';
 import 'package:my_shop/providers/cart.dart';
 import 'package:my_shop/screens/product_detail_screen.dart';
+import 'package:my_shop/services/products_service.dart';
 import 'package:provider/provider.dart';
 
 class ProductItem extends StatelessWidget {
-  const ProductItem({Key? key}) : super(key: key);
+  final IProductsService productsService;
+  const ProductItem({Key? key, required this.productsService})
+      : super(key: key);
 
   void onClickAddToCart(BuildContext context, Cart cart, Product product) {
     cart.addItem(product.id, product.price, product.title);
@@ -23,8 +26,19 @@ class ProductItem extends StatelessWidget {
     ));
   }
 
+  Future<void> onPressFavoriteButton(
+      Product product, ScaffoldMessengerState scaffoldMessage) async {
+    try {
+      await product.changeFavoriteState(productsService);
+    } catch (error) {
+      scaffoldMessage.showSnackBar(SnackBar(content: Text(error.toString())));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final ScaffoldMessengerState scaffoldMessengerState =
+        ScaffoldMessenger.of(context);
     final Product product = Provider.of<Product>(context, listen: false);
 
     return ClipRRect(
@@ -37,7 +51,8 @@ class ProductItem extends StatelessWidget {
               icon: Icon(
                   value.isFavorite ? Icons.favorite : Icons.favorite_outline),
               color: Theme.of(context).colorScheme.secondary,
-              onPressed: value.changeFavoriteState,
+              onPressed: () =>
+                  onPressFavoriteButton(value, scaffoldMessengerState),
             ),
           ),
           trailing: Consumer<Cart>(

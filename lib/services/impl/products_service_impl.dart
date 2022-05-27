@@ -11,8 +11,8 @@ class ProductsServiceImpl implements IProductsService {
       : "";
 
   @override
-  Future<String> postProduct(Product product) async {
-    final Uri url = Uri.parse('$_baseUrl/products.json');
+  Future<String> postProduct(Product product, String token) async {
+    final Uri url = Uri.parse('$_baseUrl/products.json?auth=$token');
     try {
       http.Response response =
           await http.post(url, body: _encodeProduct(product));
@@ -24,8 +24,8 @@ class ProductsServiceImpl implements IProductsService {
   }
 
   @override
-  Future<List<Product>> fetchProducts() async {
-    final Uri url = Uri.parse('$_baseUrl/products.json');
+  Future<List<Product>> fetchProducts(String token) async {
+    final Uri url = Uri.parse('$_baseUrl/products.json?auth=$token');
     try {
       final http.Response response = await http.get(url);
       if (response.statusCode > 399) {
@@ -40,8 +40,9 @@ class ProductsServiceImpl implements IProductsService {
   }
 
   @override
-  Future<Product> updateProduct(Product product) async {
-    final Uri url = Uri.parse('$_baseUrl/products/${product.id}.json');
+  Future<Product> updateProduct(Product product, String token) async {
+    final Uri url =
+        Uri.parse('$_baseUrl/products/${product.id}.json?auth=$token');
     try {
       await http.put(url, body: _encodeProduct(product));
       return product;
@@ -61,8 +62,8 @@ class ProductsServiceImpl implements IProductsService {
   }
 
   @override
-  Future<void> deleteProduct(Product product) async {
-    Uri url = Uri.parse('$_baseUrl/products/${product.id}.json');
+  Future<void> deleteProduct(Product product, String token) async {
+    Uri url = Uri.parse('$_baseUrl/products/${product.id}.json?auth=$token');
     try {
       http.Response response = await http.delete(url);
       if (response.statusCode > 399) {
@@ -74,8 +75,8 @@ class ProductsServiceImpl implements IProductsService {
   }
 
   @override
-  Future<void> toggleFavorite(Product product) async {
-    Uri url = Uri.parse('$_baseUrl/products/${product.id}.json');
+  Future<void> toggleFavorite(Product product, String token) async {
+    Uri url = Uri.parse('$_baseUrl/products/${product.id}.json?auth=$token');
     try {
       final http.Response response = await http.patch(url,
           body: json.encode({'isFavorite': product.isFavorite}));

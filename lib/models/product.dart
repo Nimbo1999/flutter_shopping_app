@@ -22,10 +22,11 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> changeFavoriteState(IProductsService productsService) async {
+  Future<void> changeFavoriteState(
+      IProductsService productsService, String token) async {
     _changeFavoriteValue();
     try {
-      await productsService.toggleFavorite(this);
+      await productsService.toggleFavorite(this, token);
     } catch (error) {
       _changeFavoriteValue();
       rethrow;

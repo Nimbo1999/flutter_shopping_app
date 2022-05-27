@@ -9,8 +9,8 @@ class OrdersServiceImpl implements IOrdersService {
   final String _baseUrl = const String.fromEnvironment("BASE_URL");
 
   @override
-  Future<String> saveOrder(OrderItem orderItem) async {
-    Uri url = Uri.parse('$_baseUrl/orders.json');
+  Future<String> saveOrder(OrderItem orderItem, String token) async {
+    Uri url = Uri.parse('$_baseUrl/orders.json?auth=$token');
     try {
       final http.Response response =
           await http.post(url, body: _encodeOrder(orderItem));
@@ -21,8 +21,8 @@ class OrdersServiceImpl implements IOrdersService {
   }
 
   @override
-  Future<List<OrderItem>> fetchOrders() async {
-    Uri url = Uri.parse('$_baseUrl/orders.json');
+  Future<List<OrderItem>> fetchOrders(String token) async {
+    Uri url = Uri.parse('$_baseUrl/orders.json?auth=$token');
     try {
       final http.Response response = await http.get(url);
       return _responseToOrderList(json.decode(response.body));

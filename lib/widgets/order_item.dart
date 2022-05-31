@@ -13,10 +13,27 @@ class OrderItemWidget extends StatefulWidget {
   State<OrderItemWidget> createState() => _OrderItemWidgetState();
 }
 
-class _OrderItemWidgetState extends State<OrderItemWidget> {
+class _OrderItemWidgetState extends State<OrderItemWidget>
+    with SingleTickerProviderStateMixin {
   bool _expanded = false;
+  AnimationController? _animationController;
+  Animation<double>? _opacityAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 200));
+    _opacityAnimation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(_animationController!);
+  }
 
   setExpanded() {
+    if (_expanded) {
+      _animationController!.reverse();
+    } else {
+      _animationController!.forward();
+    }
     setState(() {
       _expanded = !_expanded;
     });
@@ -37,10 +54,15 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
               onPressed: setExpanded,
             ),
           ),
-          if (_expanded)
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-              height: min(widget.order.products.length * 20 + 20, 100),
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeIn,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            height: _expanded
+                ? min(widget.order.products.length * 20 + 20, 100)
+                : 0,
+            child: FadeTransition(
+              opacity: _opacityAnimation!,
               child: ListView(
                 children: widget.order.products
                     .map((product) => Row(
@@ -60,7 +82,8 @@ class _OrderItemWidgetState extends State<OrderItemWidget> {
                         ))
                     .toList(),
               ),
-            )
+            ),
+          )
         ],
       ),
     );
